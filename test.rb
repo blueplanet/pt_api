@@ -35,6 +35,8 @@ if story_id
     puts "story_name: #{story_name}"
     write_pull_request_template story_id, story_name
     `hub pull-request -F ~/.pullreqmessage.txt -b $REPO_OWNER:$DEFAULT_BRANCH`
+  else
+    `hub pull-request`
   end
 else
   `hub pull-request`
