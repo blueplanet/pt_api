@@ -28,16 +28,14 @@ def write_pull_request_template(story_id, story_name)
 end
 
 story_id = get_story_id
-puts "story_id: #{story_id}"
 if story_id
   story_name = get_story_name(story_id)
 
   if story_name
     puts "story_name: #{story_name}"
     write_pull_request_template story_id, story_name
-    # ihub pull-request`
-    # `hub browse`
+    `hub pull-request -F ~/.pullreqmessage.txt -b $REPO_OWNER:$DEFAULT_BRANCH`
   end
 else
-
+  `hub pull-request`
 end
