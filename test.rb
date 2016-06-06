@@ -1,7 +1,7 @@
 require 'net/http'
 require 'json'
 
-PULL_REQUEST_TEMPLATE = '.pull_requestf_message'
+PULL_REQUEST_TEMPLATE = 'PULLREQ_EDITMSG'
 
 def get_story_id
   current_branch = `git symbolic-ref --short HEAD`
@@ -16,28 +16,30 @@ def get_story_name(story_id)
   https = Net::HTTP.new(url.host, 443)
   https.use_ssl = true
   result = JSON(https.get(url.path, 'X-TrackerToken' => ENV['PT_TOKEN']).body)
+  puts result
   story_name = result['name']
 end
 
 def write_pull_request_template(story_id, story_name)
-  open(File.join(Dir.pwd, '.git', PULL_REQUEST_TEMPLATE), 'w') do |file|
+  open(template_path, 'w') do |file|
     file.puts "[fixed ##{story_id}]#{story_name}"
     file.puts "\n"
     file.puts "https://www.pivotaltracker.com/story/show/#{story_id}"
   end
 end
 
+def template_path
+  File.join(Dir.pwd, '.git', PULL_REQUEST_TEMPLATE)
+end
+
 story_id = get_story_id
 if story_id
   story_name = get_story_name(story_id)
+  write_pull_request_template story_id, 'test'
 
   if story_name
-    puts "story_name: #{story_name}"
     write_pull_request_template story_id, story_name
-    `hub pull-request -F ~/.pullreqmessage.txt -b $REPO_OWNER:$DEFAULT_BRANCH`
-  else
-    `hub pull-request`
   end
-else
-  `hub pull-request`
 end
+
+system 'hub pull-request --browse'
