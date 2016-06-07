@@ -15,7 +15,7 @@ def get_story_name(story_id)
   https.use_ssl = true
 
   response = https.get(url.path, 'X-TrackerToken' => ENV['PT_TOKEN'])
-  response.status_code == 200 ? JSON(response.body)['name'] : nil
+  response.code == 200 ? JSON(response.body)['name'] : nil
 end
 
 def write_pull_request_template(story_id, story_name)
